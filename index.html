@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Suscripción informe tech diario</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #020617;
+      color: #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin-bottom: 1rem;
+    }
+    input[type="email"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      background: #0ea5e9;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+    .msg {
+      margin-top: 10px;
+      font-size: 0.85rem;
+    }
+    .ok {
+      color: #4ade80;
+    }
+    .error {
+      color: #f97373;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Suscríbete al informe diario tech</h1>
+    <p>
+      Recibe cada mañana en tu correo un resumen curado de tendencias en IA, cloud,
+      ciberseguridad, hardware y movimientos de negocio tecnológicos.
+    </p>
+
+    <form id="form">
+      <input
+        type="email"
+        id="email"
+        placeholder="tu@correo.com"
+        required
+      />
+      <button type="submit" id="btn">Suscribirme</button>
+    </form>
+
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <script>
+    const API_URL = "https://TU-ID.execute-api.TU-REGION.amazonaws.com/prod/subscribe"; // <-- pon aquí tu endpoint
+
+    const form = document.getElementById("form");
+    const emailInput = document.getElementById("email");
+    const btn = document.getElementById("btn");
+    const msg = document.getElementById("msg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+
+      if (!email) return;
+
+      btn.disabled = true;
+      msg.textContent = "Enviando...";
+      msg.className = "msg";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+
+        if (res.ok) {
+          msg.textContent = "¡Listo! Te has suscrito al informe diario.";
+          msg.className = "msg ok";
+          emailInput.value = "";
+        } else {
+          msg.textContent = "Hubo un problema al suscribirte. Intenta más tarde.";
+          msg.className = "msg error";
+        }
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "Error de red. Intenta más tarde.";
+        msg.className = "msg error";
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
